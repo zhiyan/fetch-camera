@@ -67,12 +67,15 @@ function parseData( data ){
     var $ = cheerio.load(data),
         $params = $(".category_param_list li"),
         priceText = $(".price-type").text(),
+        isHalt = $(".price .n_c").text().trim() === "停产",
         price,
         obj={};
     obj.relateId = $("#addCompareBtn").data("rel").split(",")[0];
-    obj.name = $(".product-title a").text().replace(/^[\u4e00-\u9fa5]*/,"").trim();
+    obj.name = $(".product-title a").text().trim();//.replace(/^[\u4e00-\u9fa5]*/,"")
     price = (priceText.match(/[\d.]+/) || [])[0];
     price && ( obj.price = ~priceText.indexOf("万") ? price*10000 : +price)
+    obj.isHalt = isHalt;
+    obj.imageUrl = $(".pic img").attr("src");
     $params.each(function(i,v){
       var $this = $(v),
           title = $this.find("span").eq(0).text().trim(),
