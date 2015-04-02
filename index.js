@@ -9,15 +9,15 @@ var total = 0;
 var cbs = [];
 
 var attrMap = {
-  "镜头用途" : "use",
-  "焦距范围" : "scope",
-  "镜头卡口" : "interface",
+  "镜头用途" : "useage",
+  "焦距范围" : "focalDistance",
+  "镜头卡口" : "socket",
   "滤镜尺寸" : "size",
   "镜头结构" : "structure",
-  "最大光圈" : "max",
-  "最小光圈" : "min",
+  "最大光圈" : "maxAperture",
+  "最小光圈" : "minAperture",
   // "防抖性能" : ""
-  "最近聚焦距离" : "distance"
+  "最近聚焦距离" : "focusDistance"
 }
 
 function request( url,cb ){
