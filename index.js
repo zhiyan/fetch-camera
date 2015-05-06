@@ -78,7 +78,7 @@ for(var i = 1; i<= 60;i++)
 
 async.parallel( cbs, function(err,results){
   console.log("total" + dataArr.length)
-  fs.writeFile('data/data.json', JSON.stringify(dataArr), function (err) {
+  fs.writeFile('data/lens.json', JSON.stringify(dataArr), function (err) {
     if (err) throw err;
   });
 });

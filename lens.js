@@ -5,27 +5,31 @@ var async = require("async");
 var iconv = require("iconv-lite");
 
 var num = 1;
-var pageSize = 7;
+var pageSize = 30;
 var baseUrl = "http://detail.zol.com.cn";
 var cbs = [];
 var urlList = [];
 var dataArr = [];
 
 var attrMap = {
-  "发布日期" : "publishDate",
-  "有效像素" : "pixel",
-  "产品重量" : "weight",
-  "传感器类型" : "sensor",
-  "传感器尺寸" : "sensorSize",
-  "影像处理器" : "processor",
-  "对焦点数" : "focusPoints",
-  "最高分辨率" : "maxPixcels",
-  "产品类型" : "productType",
-  "显示屏尺寸" : "lcd",
-  "快门速度" : "shutterSpeed",
-  "外形尺寸" : "size",
-  "参考价格" : "price",
-  "是否停产" : "isHalt"
+  "镜头定位" : "purpose",
+  "镜头分类" : "category",
+  "镜头用途" : "usage",
+  "镜头类型" : "type",
+  "镜头卡口" : "swan",
+  "滤镜尺寸" : "size",
+  "驱动马达" : "motor",
+  "最大光圈" : "maxAperture",
+  "最小光圈" : "minAperture",
+  "光圈叶片数" : "blades",
+  "焦距范围" : "range",
+  "等效焦距" : "equivalentLength",
+  "最近对焦距离" : "distance",
+  "最大放大倍率" : "maxRatio",
+  "防抖性能" : "stabilization",
+  "镜头直径" : "diameter",
+  "镜头长度" : "length",
+  "镜头重量" : "weight"
 }
 
 function request( url,type,cb ){
@@ -51,14 +55,11 @@ function buildUrl( data ){
     var $this = $(this),
         $intro = $this.find(".pro-intro"),
         url = $intro.find(".param .more").attr("href");
-        price = $this.find(".price-type").text(),
         name = $intro.find("h3 a").text();
 
-        if( /\d+/.test(price) && !/套机/.test(name) && url ){
-          urlList.push(function(cb){
-            request(baseUrl+url,"detail",cb)
-          });
-        }
+        url && urlList.push(function(cb){
+          request(baseUrl+url,"detail",cb)
+        });
   });
 }
 
@@ -70,8 +71,8 @@ function parseData( data ){
         isHalt = $(".price .n_c").text().trim() === "停产",
         price,
         obj={};
-    obj.relateId = $("#addCompareBtn").data("rel").split(",")[0];
-    obj.name = $(".product-title a").text().trim();//.replace(/^[\u4e00-\u9fa5]*/,"")
+    obj.relateId = $(".compare-btn").data("rel").split(",")[0];
+    obj.name = $(".product-title a").text().trim();
     price = (priceText.match(/[\d.]+/) || [])[0];
     price && ( obj.price = ~priceText.indexOf("万") ? price*10000 : +price)
     obj.isHalt = isHalt;
@@ -91,25 +92,6 @@ function parseData( data ){
 }
 
 function valueHandler( value, type ){
-  switch( type ){
-    case "sensorSize" : 
-      value = /全画幅/.test(value) ? "全画幅" : "APS-C";
-      break;
-    case "weight" : 
-    case "pixel" :
-    case "lcd" :
-    case "focusPoints" :
-      value = value.match(/[\d.]+/)[0];
-      break;
-    case "shutterSpeed" : 
-      value = value.match(/[\d-\/]*/)[0];
-      break;
-    case "publishDate" :
-      value = value.replace("年","-").replace("月","");
-      break;
-    default:
-      break;
-  }
   return value;
 }
 
@@ -120,17 +102,17 @@ function count(){
 // request list
 for(var i = 1; i<= pageSize;i++){
   cbs.push(function(cb){
-    request(baseUrl+"/digital_camera_index/subcate15_list_s1875_"+count()+".html","list",cb)
+    request(baseUrl+"/lens/"+count()+".html","list",cb)
   })
 }
 
 async.parallel( cbs, function(err,results){
-  console.log("about total camera:" + urlList.length)
+  console.log("about total lens:" + urlList.length)
 // urlList.splice(1);
   async.parallel( urlList, function(err,results){
     console.log("fetch finished...")
 
-    fs.writeFile('data/camera.json', JSON.stringify(dataArr), function (err) {
+    fs.writeFile('data/lens.json', JSON.stringify(dataArr), function (err) {
       if (err) throw err;
       console.log("save data finished!")
     });

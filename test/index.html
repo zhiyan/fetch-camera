@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>test</title>
+	<script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+</head>
+<body>
+	
+	<script>
+	var camera = new Firebase("https://mingshi.firebaseio.com/camera");
+	camera.on("value", function(snapshot) {
+	  console.log(snapshot.val())
+	});
+	</script>
+</body>
+</html>

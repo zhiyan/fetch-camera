@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "node test/test.js",
-    "start": "node index.js"
+    "start": "node lens.js",
+    "lens": "node lens.js",
+    "camera" : "node camera.js"
   },
   "author": "",
   "license": "ISC",
