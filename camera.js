@@ -9,7 +9,8 @@ var pageSize = 7;
 var baseUrl = "http://detail.zol.com.cn";
 var cbs = [];
 var urlList = [];
-var dataArr = [];
+var dataObj = {};
+var length = 0;
 
 var attrMap = {
   "发布日期" : "publishDate",
@@ -69,8 +70,9 @@ function parseData( data ){
         priceText = $(".price-type").text(),
         isHalt = $(".price .n_c").text().trim() === "停产",
         price,
+        relateId,
         obj={};
-    obj.relateId = $("#addCompareBtn").data("rel").split(",")[0];
+    relateId = $("#addCompareBtn").data("rel").split(",")[0];
     obj.name = $(".product-title a").text().trim();//.replace(/^[\u4e00-\u9fa5]*/,"")
     price = (priceText.match(/[\d.]+/) || [])[0];
     price && ( obj.price = ~priceText.indexOf("万") ? price*10000 : +price)
@@ -85,8 +87,8 @@ function parseData( data ){
         obj[attrMap[title]] = valueHandler(content,attrMap[title]);
       }
     });
-    dataArr.push(obj)
-    console.log("## total: " + dataArr.length)
+    dataObj[relateId] = obj;
+    console.log("## total: " + ++length )
   }
 }
 
@@ -130,7 +132,7 @@ async.parallel( cbs, function(err,results){
   async.parallel( urlList, function(err,results){
     console.log("fetch finished...")
 
-    fs.writeFile('data/camera.json', JSON.stringify(dataArr), function (err) {
+    fs.writeFile('data/camera.json', JSON.stringify(dataObj), function (err) {
       if (err) throw err;
       console.log("save data finished!")
     });

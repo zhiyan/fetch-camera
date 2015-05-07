@@ -9,7 +9,8 @@ var pageSize = 30;
 var baseUrl = "http://detail.zol.com.cn";
 var cbs = [];
 var urlList = [];
-var dataArr = [];
+var dataObj = {};
+var length = 0;
 
 var attrMap = {
   "镜头定位" : "purpose",
@@ -70,8 +71,9 @@ function parseData( data ){
         priceText = $(".price-type").text(),
         isHalt = $(".price .n_c").text().trim() === "停产",
         price,
+        relateId,
         obj={};
-    obj.relateId = $(".compare-btn").data("rel").split(",")[0];
+    relateId = $(".compare-btn").data("rel").split(",")[0];
     obj.name = $(".product-title a").text().trim();
     price = (priceText.match(/[\d.]+/) || [])[0];
     price && ( obj.price = ~priceText.indexOf("万") ? price*10000 : +price)
@@ -86,8 +88,8 @@ function parseData( data ){
         obj[attrMap[title]] = valueHandler(content,attrMap[title]);
       }
     });
-    dataArr.push(obj)
-    console.log("## total: " + dataArr.length)
+    dataObj[relateId] = obj;
+    console.log("## total: " + ++length)
   }
 }
 
@@ -112,7 +114,7 @@ async.parallel( cbs, function(err,results){
   async.parallel( urlList, function(err,results){
     console.log("fetch finished...")
 
-    fs.writeFile('data/lens.json', JSON.stringify(dataArr), function (err) {
+    fs.writeFile('data/lens.json', JSON.stringify(dataObj), function (err) {
       if (err) throw err;
       console.log("save data finished!")
     });
